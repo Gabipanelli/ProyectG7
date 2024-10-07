@@ -1,5 +1,5 @@
 from django.db import models
-from apps.usuarios.models import Usuario
+from apps.usuarios.models import Usuarios
 
 class Categoria(models.Model):
 	nombre = models.CharField(max_length = 60)
@@ -19,7 +19,7 @@ class Noticia(models.Model):
 		return self.titulo
 
 class Comentario(models.Model):
-	usuario = models.ForeignKey(Usuario, on_delete = models.CASCADE)
+	usuario = models.ForeignKey(Usuarios, on_delete = models.CASCADE)
 	texto = models.TextField(max_length = 1500)
 	noticia = models.ForeignKey(Noticia, on_delete = models.CASCADE)
 	fecha = models.DateTimeField(auto_now_add=True)
