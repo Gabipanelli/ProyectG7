@@ -1,19 +1,54 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Registro{% endblock %}
-{% block contenido %}
 
-<main role="main">
+{% block contenido %}
+<main>
   <div class="container">
-    <div class="row mt-3">
-      <div class="col-md-9 mx-auto mb-5">
-        <form action="" method="post">{% csrf_token %}         
-         <h3 class="mb-4">Registro</h3>
-          {{form.as_p}}
-          <p><input type="submit" class="btn btn-primary btn-block" value="Confirmar"></p>
-        </form>
-      </div>
-    </div>
-  </div>
+    <form action="" method="post">
+      <h2>Registrarse</h2>
+      <div class="content">
+        <div class="imput-box">
+           <label for="name">Nombre completo</label>
+           <input type="text" placeholder="Ingresar nombre completo" name="required">
+        </div>
+        <div class="imput-box">
+           <label for="Usuario">Usuario</label>
+           <input type="text" placeholder="Ingresar nombre de usuario" name="uname" required>
+        </div>
+        <div class="imput-box">
+           <label for="Email">Correo Electronico</label>
+           <input type="email" placeholder="Ingrese correo electronico valido" name="email" required>
+        </div>
+        <div class="imput-box">
+           <label for="Phonenumber">Numero de telefono</label>
+           <input type="tel" placeholder="Ingrese numero de telefono" name="phone number" required>
+        </div>
+        <div class="imput-box">
+           <label for="password">Contraseña</label>
+           <input type="password" placeholder="Ingrese contraseña" name="password" required>
+        </div>
+        <div class="imput-box">
+           <label for="Cpassword">Confirmar contraseña</label>
+           <input type="password" placeholder="Confirmar contraseña" name="ConfirmPassword" required>
+        </div>
+        <span class="Gender title">Genero</span>
+        <div class="gender-category">
+           <input type="radio" name="Gender" id="male">
+           <label for="Gender">Masculino</label>
+           <input type="radio" name="Gender" id="Female">
+           <label for="Gender">Femenino</label>
+           <input type="radio" name="Gender" id="other">
+           <label for="Gender">Otro</label>
+        </div>
+     </div>
+     <div class="Alert">
+        <p>Al hacer clic en Registrarse, acepta muestros <a href="#">Terminos,</a><a href="#">Politica de Privacidad,</a> y <a href="#">Politica de cookies,</a> Puede recibir notificaciones por SMS de nuestra parte y puede cancelar su suscrpcion en cualquier momento.</p>
+     </div>
+     <div class="button-container">
+        <button type="submit">Registrarse</button>
+     </div>
+  </form>
+</div>
 </main>
 {% endblock contenido %}
