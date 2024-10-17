@@ -10,8 +10,8 @@
 
 
 <body class="contenedor">
-
-	<div class="center">
+	<div class="nav-bg">
+		<nav class="navegacion-principal">
 		<img src="{% static 'img/logo.png' %}" width="50px" height="50px">
 		<a href="{% url 'home' %}">IR AL HOME</a>
 		<a href="{% url 'nosotros' %}">IR A NOSOTROS</a>
@@ -25,10 +25,8 @@
 			<a href="{% url 'usuarios:registro' %}">Registrar</a>
 		{% endif %}
 		
-		
-
+		</nav>
 	</div>
-
 	<div class="bloque">
 	{% block contenido %}
 	
