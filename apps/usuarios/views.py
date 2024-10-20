@@ -2,30 +2,18 @@ from django.shortcuts import render
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .forms import RegistroForm
-from django.views.generic import FormView
 from django.contrib.auth import views as auth_views
-# Create your views here.
 
+# Vista basada en clase para el registro
 class Registro(CreateView):
-	#FORMULARIO DJANGO
-	form_class = RegistroForm
-	success_url = reverse_lazy('login')
-	template_name = 'usuarios/registro.html'
+    form_class = RegistroForm
+    success_url = reverse_lazy('usuarios:login')  # Cambiado a 'usuarios:login' para usar el namespace correcto
+    template_name = 'usuarios/registro.html'
 
-	def form_valid(self,form):
-		form.save() 
-		return super().form_valid(form)
-		
-	def register_view(request):
-		if request.method == "POST":
-			form = SignUpForm(request.POST)
-			if form.is_valid():
-				form.save()
-				return redirect('login')
-		else:
-			form = SingUpForm()
-		return render(request, 'usaurios/registro.html', {'form': form})
+    def form_valid(self, form):
+        form.save()  # Guarda el usuario
+        return super().form_valid(form)
 
+# Vista basada en clase para el login
 class Login(auth_views.LoginView):
-	template_name = 'usuarios/login.html'
-
+    template_name = 'usuarios/login.html'

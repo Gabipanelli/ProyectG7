@@ -5,37 +5,15 @@
 {% block contenido %}
 
 <main>
-   <div class="container">
+   <div>
      <form action="" method="post">
        {% csrf_token %}
        <h2>Registrarse</h2>
-       <div class="content">
-         <div class="input-box">
-            <label for="name">Nombre completo</label>
-            <input type="text" id="name" placeholder="Ingresar nombre completo" name="name" required>
-         </div>
-         <div class="input-box">
-            <label for="Usuario">Usuario</label>
-            <input type="text" id="Usuario" placeholder="Ingresar nombre de usuario" name="uname" required>
-         </div>
-         <div class="input-box">
-            <label for="Email">Correo Electrónico</label>
-            <input type="email" id="Email" placeholder="Ingrese correo electrónico válido" name="email" required>
-         </div>
-         <!--<div class="input-box">
-            <label for="Phonenumber">Número de teléfono</label>
-            <input type="tel" id="Phonenumber" placeholder="Ingrese número de teléfono" name="phonenumber" required>
-         </div> -->
-         <div class="input-box">
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" placeholder="Ingrese contraseña" name="password" required>
-         </div>
-         <div class="input-box">
-            <label for="Cpassword">Confirmar contraseña</label>
-            <input type="password" id="Cpassword" placeholder="Confirmar contraseña" name="confirm_password" required>
-         </div>
-         <span class="Gender title">Género</span>
-         <div class="gender-category">
+       <div>
+         {{ form.as_p }} <!-- Esto mostrará todos los campos del formulario automáticamente -->
+
+         <span>Género</span>
+         <div>
             <input type="radio" name="gender" id="male" value="Masculino">
             <label for="male">Masculino</label>
             <input type="radio" name="gender" id="female" value="Femenino">
@@ -44,15 +22,15 @@
             <label for="other">Otro</label>
          </div>
       </div>
-      <div class="Alert">
+      <div>
          <p>Al hacer clic en Registrarse, acepta nuestros <a href="#">Términos,</a> <a href="#">Política de Privacidad,</a> y <a href="#">Política de cookies.</a> Puede recibir notificaciones por SMS de nuestra parte y puede cancelar su suscripción en cualquier momento.</p>
       </div>
-      <div class="button-container">
+      <div>
          <button type="submit">Registrarse</button>
       </div>
    </form>
+   <!-- Muestra los errores del formulario -->
+   {{ form.errors }} 
  </div>
- {{form.errors}}
 </main>
-
  {% endblock contenido %}

@@ -4,23 +4,32 @@
 {% block titulo %}NOTICIAS{% endblock titulo %}
 
 {% block contenido %}
-    <h1>NOTICIAS DESTACADAS</h1>
+    <h1>ÚLTIMAS NOTICIAS DESTACADAS</h1>
     <img src="{{ noticia.imagen.url }}" width="500" height="500">
     
-    <p><strong>TITULO:</strong> {{ noticia.titulo }}</p>
+    <p><strong>TÍTULO:</strong> {{ noticia.titulo }}</p>
     <p><strong>FECHA:</strong> {{ noticia.fecha }}</p>
-    <p><strong>CATEGORIA:</strong> {{ noticia.categoria_noticia }}</p>
+    <p><strong>CATEGORÍA:</strong> {{ noticia.categoria_noticia }}</p>
     <p><strong>CUERPO:</strong> {{ noticia.cuerpo }}</p>
-    
+
+    {% if user == noticia.usuario %}
+        <a href="{% url 'noticias:actualizar_noticia' noticia.pk %}">Editar</a>
+        <a href="{% url 'noticias:eliminar_noticias' noticia.pk %}">Eliminar</a>
+    {% endif %}
+
     <br><br>
-    
-    <form method="POST" action="{% url 'noticias:comentar' %}">
-        {% csrf_token %}
-        <textarea name="comentario" maxlength="1500" placeholder="Escriba su comentario acá"></textarea>
-        <input type="hidden" name="id_noticia" value="{{ noticia.pk }}"> 
-        <input type="submit" value="GUARDAR">
-    </form>
-    
+
+    {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'noticias:comentar' %}">
+            {% csrf_token %}
+            <textarea name="comentario" maxlength="1500" placeholder="Escribe tu comentario aquí"></textarea>
+            <input type="hidden" name="id_noticia" value="{{ noticia.pk }}"> 
+            <input type="submit" value="GUARDAR">
+        </form>
+    {% else %}
+        <p>Por favor, <a href="{% url 'usuarios:login' %}">inicia sesión</a> para comentar.</p>
+    {% endif %}
+
     <br><br><br>
     <h3>COMENTARIOS</h3>
     {% if comentarios %}
@@ -32,7 +41,7 @@
                     <p>{{ com.texto }}</p>
 
                     {% if user == com.usuario %}
-                        <a href="">borrar</a>
+                        <a href="{% url 'noticias:eliminar_comentario' com.pk %}">Borrar</a>
                     {% endif %}
                 </li>
                 <hr>

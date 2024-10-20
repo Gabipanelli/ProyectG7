@@ -18,28 +18,48 @@ class DetalleNoticiaView(DetailView):
 	template_name = 'noticias/detalle.html'
 
 class ListarNoticiasView(ListView):
-	model = Noticia
-	template_name = 'noticias/listar.html'
-	context_object_name = 'noticias'
-	paginate_by = 4 
-	
-	def get_queryset(self):
-		query = self.request.GET.get('titulo')
-		queryset = super().get_queryset()  
-		if query:
-			queryset = queryset.filter(titulo__icontains=query)
-		return queryset.order_by('titulo')
+    model = Noticia
+    template_name = 'noticias/listar.html'
+    context_object_name = 'noticias'
+    paginate_by = 4 
+
+def get_queryset(self):
+    queryset = Noticia.objects.all()
+
+    fecha_inicio = self.request.GET.get('fecha_inicio')
+    fecha_fin = self.request.GET.get('fecha_fin')
+    comentarios_min = self.request.GET.get('comentarios_min')
+
+    if fecha_inicio and fecha_fin:
+        queryset = queryset.filter(fecha__range=[fecha_inicio, fecha_fin])
+
+    if comentarios_min:
+        queryset = queryset.annotate(num_comentarios=models.Count('comentario')).filter(num_comentarios__gte=comentarios_min)
+
+    return queryset
 
 class ActualizarNoticiaView(UpdateView):
-	model = Noticia
-	form_class = NoticiaForm
-	template_name = 'noticias/form_noticia.html'
-	success_url = reverse_lazy('lista_noticias')
+    model = Noticia
+    form_class = NoticiaForm
+    template_name = 'noticias/form_noticia.html'
+    success_url = reverse_lazy('noticias:listar')
+
+    def dispatch(self, request, *args, **kwargs):
+        noticia = self.get_object()
+        if noticia.usuario != self.request.user:
+            raise PermissionDenied("No tienes permiso para editar esta noticia")
+        return super().dispatch(request, *args, **kwargs)
 
 class EliminarNoticiaView(DeleteView):
-	model = Noticia
-	template_name = 'noticias/confirmacion_eliminacion.html'
-	success_url = reverse_lazy('lista_noticias')
+    model = Noticia
+    template_name = 'noticias/confirmacion_eliminacion.html'
+    success_url = reverse_lazy('noticias:listar')
+
+    def dispatch(self, request, *args, **kwargs):
+        noticia = self.get_object()
+        if noticia.usuario != self.request.user:
+            raise PermissionDenied("No tienes permiso para eliminar esta noticia")
+        return super().dispatch(request, *args, **kwargs)
 
 @login_required
 def Listar_Noticias(request):
@@ -89,6 +109,17 @@ def Comentar_Noticia(request):
 	noticia = Noticia.objects.get(pk = noti) #BUSCO LA NOTICIA CON ESA PK
 	coment = Comentario.objects.create(usuario = usu, noticia = noticia, texto = com)
 	return redirect(reverse_lazy('noticias:detalle', kwargs={'pk': noti}))
+
+ 
+class EliminarComentarioView(DeleteView):
+	model = Comentario
+	template_name = 'comentarios/eliminar_comentarios.html'
+    
+	def get_success_url(self):
+		noticia_id = self.object.noticia.id
+		return reverse_lazy('detalle_noticia', kwargs={'pk': noticia_id})
+
+
 
 #{'nombre':'name', 'apellido':'last name', 'edad':23}
 #EN EL TEMPLATE SE RECIBE UNA VARIABLE SEPARADA POR CADA CLAVE VALOR
