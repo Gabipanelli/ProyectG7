@@ -4,6 +4,10 @@ from . import views
 from .views import ListarNoticiasView, CrearNoticiaView, DetalleNoticiaView, ActualizarNoticiaView, EliminarNoticiaView
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from .models import Noticia
+from .views import EliminarComentarioView
+
+
+
 app_name = 'noticias'
 
 urlpatterns = [
@@ -14,5 +18,5 @@ urlpatterns = [
 	path('editar/<int:pk>/', ActualizarNoticiaView.as_view(), name='actualizar_noticia'),
 	path('eliminar/<int:pk>', EliminarNoticiaView.as_view(), name = 'eliminar_noticias'),
 	path('Comentario/', views.Comentar_Noticia, name = 'comentar'),
-	
+	path('comentario/eliminar/<int:pk>/', EliminarComentarioView.as_view(), name='eliminar_comentario'),
 ]

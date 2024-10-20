@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}ELIMINAR COMENTARIOS{% endblock titulo %}
+
+{% block contenido %}
+
+<h2>¿Estás seguro de que quieres eliminar este comentario?</h2>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Eliminar</button>
+    <a href="{% url 'noticias:detalle_noticia' pk=object.noticia.id %}">Cancelar</a>
+</form>
+
+{% endblock contenido %}
