@@ -3,52 +3,56 @@
 {% block title %}Registro{% endblock %}
 
 {% block contenido %}
+
 <main>
-  <div class="container">
-    <form action="" method="post">
-      <h2>Registrarse</h2>
-      <div class="content">
-        <div class="imput-box">
-           <label for="name">Nombre completo</label>
-           <input type="text" placeholder="Ingresar nombre completo" name="required">
-        </div>
-        <div class="imput-box">
-           <label for="Usuario">Usuario</label>
-           <input type="text" placeholder="Ingresar nombre de usuario" name="uname" required>
-        </div>
-        <div class="imput-box">
-           <label for="Email">Correo Electronico</label>
-           <input type="email" placeholder="Ingrese correo electronico valido" name="email" required>
-        </div>
-        <div class="imput-box">
-           <label for="Phonenumber">Numero de telefono</label>
-           <input type="tel" placeholder="Ingrese numero de telefono" name="phone number" required>
-        </div>
-        <div class="imput-box">
-           <label for="password">Contraseña</label>
-           <input type="password" placeholder="Ingrese contraseña" name="password" required>
-        </div>
-        <div class="imput-box">
-           <label for="Cpassword">Confirmar contraseña</label>
-           <input type="password" placeholder="Confirmar contraseña" name="ConfirmPassword" required>
-        </div>
-        <span class="Gender title">Genero</span>
-        <div class="gender-category">
-           <input type="radio" name="Gender" id="male">
-           <label for="Gender">Masculino</label>
-           <input type="radio" name="Gender" id="Female">
-           <label for="Gender">Femenino</label>
-           <input type="radio" name="Gender" id="other">
-           <label for="Gender">Otro</label>
-        </div>
-     </div>
-     <div class="Alert">
-        <p>Al hacer clic en Registrarse, acepta muestros <a href="#">Terminos,</a><a href="#">Politica de Privacidad,</a> y <a href="#">Politica de cookies,</a> Puede recibir notificaciones por SMS de nuestra parte y puede cancelar su suscrpcion en cualquier momento.</p>
-     </div>
-     <div class="button-container">
-        <button type="submit">Registrarse</button>
-     </div>
-  </form>
-</div>
+   <div class="container">
+     <form action="" method="post">
+       {% csrf_token %}
+       <h2>Registrarse</h2>
+       <div class="content">
+         <div class="input-box">
+            <label for="name">Nombre completo</label>
+            <input type="text" id="name" placeholder="Ingresar nombre completo" name="name" required>
+         </div>
+         <div class="input-box">
+            <label for="Usuario">Usuario</label>
+            <input type="text" id="Usuario" placeholder="Ingresar nombre de usuario" name="uname" required>
+         </div>
+         <div class="input-box">
+            <label for="Email">Correo Electrónico</label>
+            <input type="email" id="Email" placeholder="Ingrese correo electrónico válido" name="email" required>
+         </div>
+         <!--<div class="input-box">
+            <label for="Phonenumber">Número de teléfono</label>
+            <input type="tel" id="Phonenumber" placeholder="Ingrese número de teléfono" name="phonenumber" required>
+         </div> -->
+         <div class="input-box">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" placeholder="Ingrese contraseña" name="password" required>
+         </div>
+         <div class="input-box">
+            <label for="Cpassword">Confirmar contraseña</label>
+            <input type="password" id="Cpassword" placeholder="Confirmar contraseña" name="confirm_password" required>
+         </div>
+         <span class="Gender title">Género</span>
+         <div class="gender-category">
+            <input type="radio" name="gender" id="male" value="Masculino">
+            <label for="male">Masculino</label>
+            <input type="radio" name="gender" id="female" value="Femenino">
+            <label for="female">Femenino</label>
+            <input type="radio" name="gender" id="other" value="Otro">
+            <label for="other">Otro</label>
+         </div>
+      </div>
+      <div class="Alert">
+         <p>Al hacer clic en Registrarse, acepta nuestros <a href="#">Términos,</a> <a href="#">Política de Privacidad,</a> y <a href="#">Política de cookies.</a> Puede recibir notificaciones por SMS de nuestra parte y puede cancelar su suscripción en cualquier momento.</p>
+      </div>
+      <div class="button-container">
+         <button type="submit">Registrarse</button>
+      </div>
+   </form>
+ </div>
+ {{form.errors}}
 </main>
-{% endblock contenido %}
+
+ {% endblock contenido %}

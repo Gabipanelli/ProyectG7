@@ -109,3 +109,47 @@ p{
 	margin: 0;
 	bottom: 2rem;
 }
+
+form {
+    display: grid;
+    grid-gap: 10px;
+    width: 100%;
+}
+
+label {
+    justify-self: start;
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.imput-box{
+	text-align: justify;
+	font-size: 15px;
+	font-weight: 500;
+	color: white;
+}
+
+.button-container{
+    margin: 15px 0;
+}
+.button-container button{
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    display: block;
+    font-size: 20px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    background-image: linear-gradient(to right, #e2a35c, #380086);
+}
+.button-container button:hover{
+    background-image: linear-gradient(to right, #380086, #e2a35c);
+}
+
