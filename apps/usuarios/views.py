@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from .forms import RegistroForm
 from django.contrib.auth import views as auth_views
 
+
 # Vista basada en clase para el registro
 class Registro(CreateView):
     form_class = RegistroForm
@@ -17,3 +18,12 @@ class Registro(CreateView):
 # Vista basada en clase para el login
 class Login(auth_views.LoginView):
     template_name = 'usuarios/login.html'
+
+class LogoutUsuario(auth_views.LogoutView):
+    template_name = 'usuarios/logout.html'
+
+    def get_sussces_url(self):
+        messages.success(self.request, 'logout exitoso')
+        
+        return reverse('apps.usuarios:logout')
+
