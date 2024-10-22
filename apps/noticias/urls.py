@@ -5,7 +5,7 @@ from .views import ListarNoticiasView, CrearNoticiaView, DetalleNoticiaView, Act
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from .models import Noticia
 from .views import EliminarComentarioView
-
+from .views import EditarComentarioView
 
 
 app_name = 'noticias'
@@ -19,4 +19,5 @@ urlpatterns = [
 	path('eliminar/<int:pk>', EliminarNoticiaView.as_view(), name = 'eliminar_noticias'),
 	path('Comentario/', views.Comentar_Noticia, name = 'comentar'),
 	path('comentario/eliminar/<int:pk>/', EliminarComentarioView.as_view(), name='eliminar_comentario'),
+    path('comentario/editar/<int:pk>/', EditarComentarioView.as_view(), name='editar_comentario'),
 ]
