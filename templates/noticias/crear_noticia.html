@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<center>
+    <div class="container-fluid" style="margin: 200px;">
+        <a class="btn btn-outline-info" href="{% url 'noticias:crear_categoria' %}">Crear nueva categoría</a>
+    </div>
+
+    <div>
+        <h1>Crear Post</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Guardar">
+        </form>
+    </div>
+</center>
+
+{% endblock %}

@@ -5,6 +5,7 @@
 
 {% block contenido %}
     <h1>ÚLTIMAS NOTICIAS DESTACADAS</h1>
+
     <img src="{{ noticia.imagen.url }}" width="500" height="500">
     
     <p><strong>TÍTULO:</strong> {{ noticia.titulo }}</p>
@@ -17,7 +18,6 @@
         <a href="{% url 'noticias:eliminar_noticias' noticia.pk %}">Eliminar</a>
     {% endif %}
 
-    <br><br>
 
     {% if user.is_authenticated %}
         <form method="POST" action="{% url 'noticias:comentar' %}">

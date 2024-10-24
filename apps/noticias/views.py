@@ -1,17 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import (CreateView, ListView, DetailView, UpdateView, DeleteView)
 from django.contrib.auth.decorators import login_required
-from .forms import NoticiaForm
+from .forms import NoticiaForm, ComentarioForm, NuevaCategoriaForm
 from .models import Noticia, Categoria, Comentario
 from django.http import HttpResponseBadRequest
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class CrearNoticiaView(CreateView):
 	model = Noticia
 	form_class = NoticiaForm
-	template_name = 'noticias/form_noticia.html'
-	success_url = reverse_lazy('lista_noticias')
+	template_name = 'noticias/crear_noticia.html'
+	success_url = reverse_lazy('noticias:listar')
 
 class DetalleNoticiaView(DetailView):
 	model = Noticia
@@ -125,39 +126,85 @@ def Comentar_Noticia(request):
     return redirect(reverse_lazy('noticias:detalle', kwargs={'pk': noti}))
 
 
-# Vista para editar un comentario
-class EditarComentarioView(UpdateView):
+class NoticiaDetalleView(DetailView):
+    model = Noticia
+    template_name = "noticias/noticia_individual.html"
+    context_object_name = "noticias"
+    pk_url_kwarg = "id"
+    queryset = Noticia.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ComentarioForm()
+        context['comentarios'] = Comentario.objects.filter(posts_id=self.kwargs['id'])
+        return context
+
+    def noticia(self, request, *args, **kwargs):
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.usuario = request.user
+            comentario.noticia_id = self.kwargs['id']
+            comentario.save()
+            return redirect('apps.noticias.noticia_individual', id=self.kwargs['id'])
+        else:
+            context = self.get_context_data(**kwargs)
+            context['form'] = form
+            return self.render_to_response(context)
+
+
+class ComentarioCreateView(LoginRequiredMixin, CreateView):
     model = Comentario
-    fields = ['texto']
-    template_name = 'comentarios/editar_comentario.html'
+    form_class = ComentarioForm
+    template_name = 'comentario/agregarComentario.html'
+    success_url = 'comentario/comentarios/'
+
+    def form_valid(self, form):
+        form.instance.usuario = self.request.user
+        form.instance.posts_id = self.kwargs['posts_id']
+        return super().form_valid(form)
+
+
+class NoticiaCreateView(CreateView):
+    model = Noticia
+    form_class = NoticiaForm
+    template_name = 'noticias/crear_noticia.html'
+    success_url = reverse_lazy('noticias:noticia')
+
+class CategoriaCreateView(CreateView):
+    model = Categoria
+    form_class = NuevaCategoriaForm
+    template_name = 'noticias/crear_categoria.html'
 
     def get_success_url(self):
-        noticia_id = self.object.noticia.id
-        return reverse_lazy('detalle_noticia', kwargs={'pk': noticia_id})
-
-    # Verificar que el usuario es el propietario del comentario
-    def dispatch(self, request, *args, **kwargs):
-        comentario = self.get_object()
-        if comentario.usuario != self.request.user:
-            return HttpResponseForbidden('No tienes permiso para editar este comentario.')
-        return super().dispatch(request, *args, **kwargs)
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        else:
+            return reverse_lazy('noticias:crear_noticia')
 
 
-class EliminarComentarioView(DeleteView):
-    model = Comentario
-    template_name = 'comentarios/eliminar_comentarios.html'
+class CategoriaListView(ListView):
+    model = Categoria
+    template_name = 'noticias/categoria_list.html'
+    context_object_name = 'categorias'
 
-    def get_success_url(self):
-        noticia_id = self.object.noticia.id
-        return reverse_lazy('detalle_noticia', kwargs={'pk': noticia_id})
+class CategoriaDeleteView(DeleteView):
+    model = Categoria
+    template_name = 'noticias/categoria_confirm_delete.html'
+    success_url = reverse_lazy('noticias:categoria_list')
 
-    # Verificar que el usuario es el propietario del comentario
-    def dispatch(self, request, *args, **kwargs):
-        comentario = self.get_object()
-        if comentario.usuario != self.request.user:
-            return HttpResponseForbidden('No tienes permiso para eliminar este comentario.')
-        return super().dispatch(request, *args, **kwargs)
 
+class NoticiaUpdateView(LoginRequiredMixin, UpdateView):
+    model = Noticia
+    form_class = NoticiaForm
+    template_name = 'noticias/modificar_noticia.html'
+    success_url = reverse_lazy('noticias:noticia')
+
+class NoticiaDeleteView(DeleteView):
+    model = Noticia
+    template_name = 'noticias/eliminar_noticia'
+    success_url = reverse_lazy('noticias:eliminar_noticia')
 
 #{'nombre':'name', 'apellido':'last name', 'edad':23}
 #EN EL TEMPLATE SE RECIBE UNA VARIABLE SEPARADA POR CADA CLAVE VALOR

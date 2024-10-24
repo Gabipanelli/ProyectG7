@@ -2,6 +2,7 @@ from django.db import models
 from apps.usuarios.models import Usuario
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.utils import timezone
 
 class Categoria(models.Model):
 	nombre = models.CharField(max_length = 60)
@@ -23,10 +24,10 @@ class Noticia(models.Model):
         return self.titulo
 
 class Comentario(models.Model):
-	usuario = models.ForeignKey(Usuario, on_delete = models.CASCADE)
-	texto = models.TextField(max_length = 1500)
-	noticia = models.ForeignKey(Noticia, on_delete = models.CASCADE)
-	fecha = models.DateTimeField(auto_now_add=True)
+    noticia = models.ForeignKey('noticias.Noticia', on_delete=models.CASCADE, related_name='comentarios')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comentarios')
+    texto = models.TextField()
+    fecha = models.DateTimeField(auto_now_add=True)
 
-	def __str__(self):
-		return f"{noticia}->{texto}"
+    def _str_(self):
+        return self.texto
