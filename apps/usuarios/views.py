@@ -38,7 +38,7 @@ class LogoutUsuario(auth_views.LogoutView):
 
 class UsuarioListView(LoginRequiredMixin, ListView):
     model = Usuario
-    template_name = 'usuario/usuario_list.html'
+    template_name = 'usuarios/listar_usuario.html'
     context_object_name = 'usuarios'
 
     def get_queryset(self):
@@ -49,8 +49,8 @@ class UsuarioListView(LoginRequiredMixin, ListView):
 
 class UsuarioDeleteView(LoginRequiredMixin, DeleteView):
     model = Usuario
-    template_name = 'usuario/eliminar_usuario.html'
-    success_url = reverse_lazy('apps.usuario:usuario_list')
+    template_name = 'usuarios/eliminar_usuario.html'
+    success_url = reverse_lazy('usuarios:listar_usuario')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

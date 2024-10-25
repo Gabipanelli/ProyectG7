@@ -38,35 +38,25 @@ class ListarNoticiasView(ListView):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        
-        categoria = self.request.GET.get('categoria')  # Filtro por categoría
+
+        # Filtro por categoría
+        categoria = self.request.GET.get('categoria')
         if categoria:
-            queryset = queryset.filter(categoria__nombre=categoria)
-        
-      
-        fecha = self.request.GET.get('fecha')   # Filtro por fecha
+            queryset = queryset.filter(categoria_noticia=categoria)
+
+        # Filtro por fecha
+        fecha = self.request.GET.get('fecha')
         if fecha:
-            queryset = queryset.filter(fecha_publicacion__date=fecha)
-        
-        comentarios = self.request.GET.get('comentarios') # Filtro por cantidad de comentarios
+            queryset = queryset.filter(fecha__date=fecha)
+
+        # Filtro por cantidad de comentarios
+        comentarios = self.request.GET.get('comentarios')
         if comentarios:
             queryset = queryset.annotate(num_comentarios=Count('comentarios')).filter(num_comentarios__gte=int(comentarios))
+
         return queryset
 
-def get_queryset(self):
-    queryset = Noticia.objects.all()
 
-    fecha_inicio = self.request.GET.get('fecha_inicio')
-    fecha_fin = self.request.GET.get('fecha_fin')
-    comentarios_min = self.request.GET.get('comentarios_min')
-
-    if fecha_inicio and fecha_fin:
-        queryset = queryset.filter(fecha__range=[fecha_inicio, fecha_fin])
-
-    if comentarios_min:
-        queryset = queryset.annotate(num_comentarios=models.Count('comentario')).filter(num_comentarios__gte=comentarios_min)
-
-    return queryset
 
 class ActualizarNoticiaView(UpdateView):
     model = Noticia
