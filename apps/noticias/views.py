@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from .forms import NoticiaForm, ComentarioForm, NuevaCategoriaForm
 from .models import Noticia, Categoria, Comentario
 from django.http import HttpResponseBadRequest
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.db.models.query import QuerySet
+from django.contrib import messages
 
 class CrearNoticiaView(CreateView):
 	model = Noticia
@@ -52,16 +53,16 @@ class ActualizarNoticiaView(UpdateView):
             raise PermissionDenied("No tienes permiso para editar esta noticia")
         return super().dispatch(request, *args, **kwargs)
 
-class EliminarNoticiaView(DeleteView):
-    model = Noticia
-    template_name = 'noticias/confirmacion_eliminacion.html'
-    success_url = reverse_lazy('noticias:listar')
+#class EliminarNoticiaView(DeleteView):
+#    model = Noticia
+#    template_name = 'noticias/confirmacion_eliminacion.html'
+#    success_url = reverse_lazy('noticias:listar')
 
-    def dispatch(self, request, *args, **kwargs):
-        noticia = self.get_object()
-        if noticia.usuario != self.request.user:
-            raise PermissionDenied("No tienes permiso para eliminar esta noticia")
-        return super().dispatch(request, *args, **kwargs)
+#    def dispatch(self, request, *args, **kwargs):
+#        noticia = self.get_object()
+#        if noticia.usuario != self.request.user:
+#            raise PermissionDenied("No tienes permiso para eliminar esta noticia")
+#        return super().dispatch(request, *args, **kwargs)
 
 @login_required(login_url='/login/')
 def listar_noticias(request):
@@ -153,23 +154,11 @@ class NoticiaDetalleView(DetailView):
             return self.render_to_response(context)
 
 
-class ComentarioCreateView(LoginRequiredMixin, CreateView):
-    model = Comentario
-    form_class = ComentarioForm
-    template_name = 'comentario/agregarComentario.html'
-    success_url = 'comentario/comentarios/'
-
-    def form_valid(self, form):
-        form.instance.usuario = self.request.user
-        form.instance.posts_id = self.kwargs['posts_id']
-        return super().form_valid(form)
-
-
 class NoticiaCreateView(CreateView):
     model = Noticia
     form_class = NoticiaForm
     template_name = 'noticias/crear_noticia.html'
-    success_url = reverse_lazy('noticias:noticia')
+    success_url = reverse_lazy('noticias:listar')
 
 class CategoriaCreateView(CreateView):
     model = Categoria
@@ -191,20 +180,51 @@ class CategoriaListView(ListView):
 
 class CategoriaDeleteView(DeleteView):
     model = Categoria
-    template_name = 'noticias/categoria_confirm_delete.html'
+    template_name = 'noticias/categoria_delete.html'
     success_url = reverse_lazy('noticias:categoria_list')
 
 
-class NoticiaUpdateView(LoginRequiredMixin, UpdateView):
+class ModificarNoticiaView(LoginRequiredMixin, UpdateView):
     model = Noticia
     form_class = NoticiaForm
     template_name = 'noticias/modificar_noticia.html'
-    success_url = reverse_lazy('noticias:noticia')
+    success_url = reverse_lazy('noticias:listar')
 
-class NoticiaDeleteView(DeleteView):
+class EliminarNoticiaView(DeleteView):
     model = Noticia
-    template_name = 'noticias/eliminar_noticia'
-    success_url = reverse_lazy('noticias:eliminar_noticia')
+    template_name = 'noticias/eliminar_noticia.html'
+    success_url = reverse_lazy('noticias:listar')
+
+class ComentarioCreateView(LoginRequiredMixin, CreateView):
+    model = Comentario
+    form_class = ComentarioForm
+    template_name = 'noticias/crear_comentario.html'
+    success_url = 'noticias/comentar/'
+
+    def form_valid(self, form):
+        form.instance.usuario = self.request.user
+        form.instance.posts_id = self.kwargs['posts_id']
+        return super().form_valid(form)
+class ComentarioUpdateView(LoginRequiredMixin, UpdateView):
+    model = Comentario
+    form_class = ComentarioForm
+    template_name = 'noticias/comentario_form.html'
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        else:
+            return reverse('noticias:noticia_individual', args=[self.object.posts.id])
+
+class ComentarioDeleteView(LoginRequiredMixin, DeleteView):
+    model = Comentario
+    template_name = 'noticias/eliminar_comentario.html'
+
+    def get_success_url(self):
+        return reverse('noticias:noticia_individual', args=[self.object.posts.id])
+
+
 
 #{'nombre':'name', 'apellido':'last name', 'edad':23}
 #EN EL TEMPLATE SE RECIBE UNA VARIABLE SEPARADA POR CADA CLAVE VALOR

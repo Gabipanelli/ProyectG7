@@ -14,8 +14,8 @@
     <p><strong>CUERPO:</strong> {{ noticia.cuerpo }}</p>
 
     {% if user == noticia.usuario %}
-        <a href="{% url 'noticias:actualizar_noticia' noticia.pk %}">Editar</a>
-        <a href="{% url 'noticias:eliminar_noticias' noticia.pk %}">Eliminar</a>
+        <a href="{% url 'noticias:modificar_noticia' noticia.pk %}">Editar</a>
+        <a href="{% url 'noticias:eliminar_noticia' noticia.pk %}">Eliminar</a>
     {% endif %}
 
 

@@ -8,7 +8,7 @@
         <ul>
             {% for categoria in categorias %}
                 <li>{{ categoria.nombre }}
-                    <a style="color: black;" href="{% url 'noticias:categoria_confirm_delete' pk=categoria.pk %}">Eliminar</a>
+                    <a style="color: black;" href="{% url 'noticias:categoria_delete' pk=categoria.pk %}">Eliminar</a>
                 </li>
             {% empty %}
                 <li>No hay categorías</li>
@@ -16,4 +16,5 @@
         </ul>
     </div>
 </center>
+
 {% endblock %}

@@ -13,9 +13,12 @@
 
         {% if user.is_superuser or request.user.has_group:"Colaborador" %}
             <div class="container-fluid" style="margin-top: 30px;">
-                <a id="boton_post" href="{% url 'apps.posts:post_update' pk=posts.id %}">
+                <a id="boton_post" href="{% url 'noticias:modificar_noticia' pk=posts.id %}">
                 Modificar Post
                 </a>
+            </div>
+            <div class="container-fluid" style="margin-top: 300px;">
+                <a id="boton_post" href="{% url 'noticias:eliminar_noticia' pk=posts.pk %}">Eliminar Post</a>
             </div>
         {% endif %}
     </div>
@@ -55,5 +58,6 @@
             </form>
         </div>
     </div>
+    {% include 'noticias/crear_comentario.html'}
 </center>
 {% endblock contenido}
