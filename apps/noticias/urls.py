@@ -11,9 +11,9 @@ app_name = 'noticias'
 
 urlpatterns = [
 	
-	path('noticia', ListarNoticiasView.as_view(), name = 'listar'),
+	path('noticia/listar', ListarNoticiasView.as_view(), name = 'listar'),
 	path('<int:pk>/', DetalleNoticiaView.as_view(), name= 'detalle'),
-	path('noticia/', CrearNoticiaView.as_view(), name= 'crear_noticia'),
+	path('noticia/crear', CrearNoticiaView.as_view(), name= 'crear_noticia'),
 	#path('editar/<int:pk>/', ActualizarNoticiaView.as_view(), name='actualizar_noticia'),
 	#path('eliminar/<int:pk>', EliminarNoticiaView.as_view(), name = 'eliminar_noticia'),
 	path('Comentario/', views.Comentar_Noticia, name = 'comentar'),
@@ -22,6 +22,7 @@ urlpatterns = [
     path('categoria/<int:pk>/delete/', CategoriaDeleteView.as_view(), name='categoria_delete'),
 	path('noticia/<int:pk>/modificar/', ModificarNoticiaView.as_view(), name='modificar_noticia'),
 	path('noticia/<int:pk>/eliminar/', EliminarNoticiaView.as_view(), name='eliminar_noticia'),
+	path('categoria/<int:pk>/noticia/', NoticiaPorCategoriaView.as_view(), name='noticia_por_categoria'),
 	path('comentario/<int:pk>/editar/', ComentarioUpdateView.as_view(), name='comentario_edit'),
     path('comentario/<int:pk>/eliminar/', ComentarioDeleteView.as_view(), name='comentario_delete'),
 ]

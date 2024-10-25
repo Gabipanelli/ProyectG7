@@ -8,6 +8,8 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query import QuerySet
 from django.contrib import messages
+from django.db.models import Count
+from django.utils import timezone
 
 class CrearNoticiaView(CreateView):
 	model = Noticia
@@ -16,15 +18,40 @@ class CrearNoticiaView(CreateView):
 	success_url = reverse_lazy('noticias:listar')
 
 class DetalleNoticiaView(DetailView):
-	model = Noticia
-	context_object_name = 'noticia'
-	template_name = 'noticias/detalle.html'
+    model = Noticia
+    context_object_name = 'noticia'
+    template_name = 'noticias/detalle.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        noticia = self.object
+        comentarios = Comentario.objects.filter(noticia=noticia)
+        context['comentarios'] = comentarios
+        return context
+
 
 class ListarNoticiasView(ListView):
     model = Noticia
     template_name = 'noticias/listar.html'
     context_object_name = 'noticias'
     paginate_by = 4 
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        categoria = self.request.GET.get('categoria')  # Filtro por categoría
+        if categoria:
+            queryset = queryset.filter(categoria__nombre=categoria)
+        
+      
+        fecha = self.request.GET.get('fecha')   # Filtro por fecha
+        if fecha:
+            queryset = queryset.filter(fecha_publicacion__date=fecha)
+        
+        comentarios = self.request.GET.get('comentarios') # Filtro por cantidad de comentarios
+        if comentarios:
+            queryset = queryset.annotate(num_comentarios=Count('comentarios')).filter(num_comentarios__gte=int(comentarios))
+        return queryset
 
 def get_queryset(self):
     queryset = Noticia.objects.all()
@@ -140,31 +167,31 @@ CLASE.objects.filter(campos = ____)
 CLASE.objects.all() ---> SELECT * FROM CLASE
 
 '''
-class NoticiaDetalleView(DetailView):
-    model = Noticia
-    template_name = "noticias/noticia_individual.html"
-    context_object_name = "noticias"
-    pk_url_kwarg = "id"
-    queryset = Noticia.objects.all()
+#class NoticiaDetalleView(DetailView):
+#    model = Noticia
+#   template_name = "noticias/noticia_individual.html"
+#    context_object_name = "noticias"
+#    pk_url_kwarg = "id"
+#    queryset = Noticia.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = ComentarioForm()
-        context['comentarios'] = Comentario.objects.filter(noticia_id=self.kwargs['id'])
-        return context
+#    def get_context_data(self, **kwargs):
+#        context = super().get_context_data(**kwargs)
+#        context['form'] = ComentarioForm()
+#        context['comentarios'] = self.objects.comentarios.all()
+#        return context
 
-    def noticia(self, request, *args, **kwargs):
-        form = ComentarioForm(request.POST)
-        if form.is_valid():
-            comentario = form.save(commit=False)
-            comentario.usuario = request.user
-            comentario.noticia_id = self.kwargs['id']
-            comentario.save()
-            return redirect('apps.noticias.noticia_individual', id=self.kwargs['id'])
-        else:
-            context = self.get_context_data(**kwargs)
-            context['form'] = form
-            return self.render_to_response(context)
+#    def noticia(self, request, *args, **kwargs):
+#        form = ComentarioForm(request.POST)
+#        if form.is_valid():
+#            comentario = form.save(commit=False)
+#            comentario.usuario = request.user
+#            comentario.noticia_id = self.kwargs['id']
+#            comentario.save()
+#            return redirect('apps.noticias.noticia_individual', id=self.kwargs['id'])
+#        else:
+#            context = self.get_context_data(**kwargs)
+#            context['form'] = form
+#            return self.render_to_response(context)
 
 
 class NoticiaCreateView(CreateView):
@@ -235,6 +262,13 @@ class ComentarioDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'noticias/eliminar_comentario.html'
 
     def get_success_url(self):
-        return reverse('noticias:noticia_individual', args=[self.object.noticia.id])
+        return reverse('noticias:detalle', args=[self.object.noticia.id])
 
 
+class NoticiaPorCategoriaView(ListView):
+    model = Noticia 
+    template_name = 'noticias/noticia_por_categoria.html'
+    context_object_name = 'noticias'
+
+    def get_queryset(self):
+        return Noticia.objects.filter(categoria_id=self.kwargs['pk'])

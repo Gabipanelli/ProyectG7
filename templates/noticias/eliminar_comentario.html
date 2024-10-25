@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% load colaborador_tags %}
+
 
 {% block contenido %}
 <center>
-{% if user.is_superuser or request.user|has_group:"Colaborador" or comentario.usuario == user %}
+{% if user.is_superuser or comentario.usuario == user %}
     <div class="container-fluid" style="margin: 300px;">
         <h1>Eliminar comentario</h1>
         <p>¿Estás seguro de que deseas eliminar este comentario?</p>

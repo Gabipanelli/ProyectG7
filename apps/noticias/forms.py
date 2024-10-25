@@ -7,13 +7,13 @@ class NoticiaForm(forms.ModelForm):
     class Meta: 
         model = Noticia
         fields = ['titulo', 'cuerpo', 'imagen','categoria_noticia', 'descripcion', 'ubicacion']
-        widges = {
+        widgets = {
             'fecha': forms.DateInput(attrs= {'tipe':'date'}),
         }
 
 class ComentarioForm(forms.ModelForm):
     class Meta: 
-        modell = Comentario
+        model = Comentario
         fields = ['texto']
 
 class NuevaCategoriaForm(forms.ModelForm):

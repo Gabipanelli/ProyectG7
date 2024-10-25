@@ -1,4 +1,4 @@
-{# load colaborador_tags #}
+
 
 <div class="container-fluid" style="margin-bottom: 20px;">
     <h2>Comentarios</h2>
@@ -13,7 +13,7 @@
             <a id="btn_post" href="{% url 'noticias:comentario_editar' pk=comentario.pk %}?next={{ request.path }}">Editar</a>
         {% endif %}
         {% if user.is_superuser or comentario.usuario == user or request.user.has_group:"Colaborador" %}
-            <a id="btn_post" href="{% url 'noticias:comentario_eliminar' pk=comentario.pk }">Eliminar</a>
+            <a id="btn_post" href="{% url 'noticias:comentario_delete' pk=comentario.pk }">Eliminar</a>
         {% endif %}
     </ul>
     <br><br>

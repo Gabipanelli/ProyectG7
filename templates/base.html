@@ -26,7 +26,18 @@
 			<a href="{% url 'login' %}">LOGIN</a>
 			<a href="{% url 'usuarios:registro' %}">Registrar</a>
 		{% endif %}
-		
+		<div class="dropdown-content">
+			<table>
+			  <tr>
+				{% if user.is_superuser %}
+				  <td><a href="{% url 'usuarios:usuario_list' %}">Lista de usuarios</a></td>
+				  <tr>
+					<td><a href="{% url 'noticias:categoria_list' %}">Lista de categorías</a></td>
+				  </tr>
+				{% endif %}
+			  </tr>
+			
+			</table>
 		</nav>
 	</div>
 	<div class="bloque">
