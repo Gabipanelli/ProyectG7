@@ -5,6 +5,7 @@
 
 {% block contenido %}
     <h1>ÚLTIMAS NOTICIAS DESTACADAS</h1>
+
     <img src="{{ noticia.imagen.url }}" width="500" height="500">
     
     <p><strong>TÍTULO:</strong> {{ noticia.titulo }}</p>
@@ -13,11 +14,10 @@
     <p><strong>CUERPO:</strong> {{ noticia.cuerpo }}</p>
 
     {% if user == noticia.usuario %}
-        <a href="{% url 'noticias:actualizar_noticia' noticia.pk %}">Editar</a>
-        <a href="{% url 'noticias:eliminar_noticias' noticia.pk %}">Eliminar</a>
+        <a href="{% url 'noticias:modificar_noticia' noticia.pk %}">Editar</a>
+        <a href="{% url 'noticias:eliminar_noticia' noticia.pk %}">Eliminar</a>
     {% endif %}
 
-    <br><br>
 
     {% if user.is_authenticated %}
         <form method="POST" action="{% url 'noticias:comentar' %}">
