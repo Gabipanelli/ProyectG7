@@ -91,19 +91,19 @@ def listar_noticias(request):
 
 @login_required
 def Detalle_Noticias(request, pk):
-	contexto = {}
-	try:
-		n = Noticia.objects.get(pk=pk)
-	except Noticia.DoesNotExist:
-		return HttpResponseBadRequest("Noticia no encontrada")
+    contexto = {}
+    try:
+        n = Noticia.objects.get(pk=pk)  # Obtienes la noticia con el pk proporcionado.
+    except Noticia.DoesNotExist:
+        return HttpResponseBadRequest("Noticia no encontrada")
 
-	n = Noticia.objects.get(pk = pk) #RETORNA SOLO UN OBEJTO
-	contexto['noticia'] = n
+    contexto['noticia'] = n
 
-	c = Comentario.objects.filter(noticia = n)
-	contexto['comentarios'] = c
+    # Filtras los comentarios asociados a la noticia usando el campo 'noticia'.
+    c = Comentario.objects.filter(noticia=n)
+    contexto['comentarios'] = c
 
-	return render(request, 'noticias/detalle.html',contexto)
+    return render(request, 'noticias/detalle.html', contexto)
 
 
 @login_required
@@ -126,7 +126,20 @@ def Comentar_Noticia(request):
     Comentario.objects.create(usuario=usu, noticia=noticia, texto=com)
     return redirect(reverse_lazy('noticias:detalle', kwargs={'pk': noti}))
 
+#{'nombre':'name', 'apellido':'last name', 'edad':23}
+#EN EL TEMPLATE SE RECIBE UNA VARIABLE SEPARADA POR CADA CLAVE VALOR
+# nombre
+# apellido
+# edad
 
+'''
+ORM
+
+CLASE.objects.get(pk = ____)
+CLASE.objects.filter(campos = ____)
+CLASE.objects.all() ---> SELECT * FROM CLASE
+
+'''
 class NoticiaDetalleView(DetailView):
     model = Noticia
     template_name = "noticias/noticia_individual.html"
@@ -137,7 +150,7 @@ class NoticiaDetalleView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = ComentarioForm()
-        context['comentarios'] = Comentario.objects.filter(posts_id=self.kwargs['id'])
+        context['comentarios'] = Comentario.objects.filter(noticia_id=self.kwargs['id'])
         return context
 
     def noticia(self, request, *args, **kwargs):
@@ -203,7 +216,7 @@ class ComentarioCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.usuario = self.request.user
-        form.instance.posts_id = self.kwargs['posts_id']
+        form.instance.posts_id = self.kwargs['noticia_id']
         return super().form_valid(form)
 class ComentarioUpdateView(LoginRequiredMixin, UpdateView):
     model = Comentario
@@ -215,28 +228,13 @@ class ComentarioUpdateView(LoginRequiredMixin, UpdateView):
         if next_url:
             return next_url
         else:
-            return reverse('noticias:noticia_individual', args=[self.object.posts.id])
+            return reverse('noticias:noticia_individual', args=[self.object.noticia.id])
 
 class ComentarioDeleteView(LoginRequiredMixin, DeleteView):
     model = Comentario
     template_name = 'noticias/eliminar_comentario.html'
 
     def get_success_url(self):
-        return reverse('noticias:noticia_individual', args=[self.object.posts.id])
+        return reverse('noticias:noticia_individual', args=[self.object.noticia.id])
 
 
-
-#{'nombre':'name', 'apellido':'last name', 'edad':23}
-#EN EL TEMPLATE SE RECIBE UNA VARIABLE SEPARADA POR CADA CLAVE VALOR
-# nombre
-# apellido
-# edad
-
-'''
-ORM
-
-CLASE.objects.get(pk = ____)
-CLASE.objects.filter(campos = ____)
-CLASE.objects.all() ---> SELECT * FROM CLASE
-
-'''
