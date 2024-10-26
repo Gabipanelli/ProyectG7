@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
 {% block titulo %}NOTICIAS{% endblock titulo %}
 
 {% block contenido %}
@@ -21,6 +22,38 @@
         </div>
         
     </div>
+	<form class="form" method="GET">
+		<div class="seccion_descripcion">
+			<!-- Filtro por categoría -->
+			<label class="presentacion__parrafo" for="categoria">Filtrar Noticia:</label>
+			<select class="presentacion__parrafo" name="categoria" id="categoria">
+				<option value="">Todas las categorías</option>
+				{% for categoria in categorias %}
+					<option value="{{ categoria.id }}" {% if request.GET.categoria == categoria.id|stringformat:"s" %}selected{% endif %}>
+						{{ categoria.nombre }}
+					</option>
+				{% endfor %}
+			</select>
+
+			<!-- Filtro por fecha -->
+			<select class="presentacion__parrafo" name="fecha">
+				<option value="">Ordenar por antiguedad</option>
+				<option value="asc">Más antiguas primero</option>
+				<option value="desc">Más recientes primero</option>
+			</select>
+			
+
+			<!-- Filtro por Titulo -->
+			<select class="presentacion__parrafo" name="titulo">
+				<option value="">Ordenar por título</option>
+				<option value="asc">A-Z</option>
+				<option value="desc">Z-A</option>
+			</select>
+
+			<button class="boton" type="submit">Filtrar</button>
+
+		</div>	
+	</form>
 
 	{% for noti in noticias %}
 		<img src="{{noti.imagen.url}}" width="100" height="100">
@@ -33,4 +66,23 @@
 	{% else %}
 		<p>Debes estar logueado para ver las noticias.</p>
 	{% endif %}
+
+	<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </span>
+</div>
+
 {% endblock contenido %}

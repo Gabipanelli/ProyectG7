@@ -20,7 +20,7 @@ class Noticia(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     ubicacion = models.CharField(max_length=100, blank=True, null=True)
 
-    def _str_(self):
+    def __str__(self):
         return self.titulo
 
 class Comentario(models.Model):
@@ -29,5 +29,5 @@ class Comentario(models.Model):
     texto = models.TextField()
     fecha = models.DateTimeField(auto_now_add=True)
 
-    def _str_(self):
+    def __str__(self):
         return self.texto

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<center>
+    <div class="container-fluid" style="margin: 200px;">
+        <h1>Usuarios</h1>
+        <br>
+        <ul>
+            {% for usuario in usuarios %}
+                <li>{{ usuario.first_name }}
+                    <a style="color: black;" href="{% url 'usuarios:usuario_delete' pk=usuario.pk %}">Eliminar</a>
+                </li>
+            {% empty %}
+                <li>No hay Usuarios</li>
+            {% endfor %}
+        </ul>
+    </div>
+</center>
+
+{% endblock %}

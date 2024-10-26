@@ -41,7 +41,7 @@
                     <p>{{ com.texto }}</p>
 
                     {% if user == com.usuario %}
-                        <a href="{% url 'noticias:eliminar_comentario' com.pk %}">Borrar</a>
+                        <a href="{% url 'noticias:comentario_delete' com.pk %}">Borrar</a>
                     {% endif %}
                 </li>
                 <hr>

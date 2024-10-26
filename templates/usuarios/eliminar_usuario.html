@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% load colaborador_tags %}
+
 
 {% block contenido %}
 <center>
-    {% if user.is_superuser or request.user|has_group:"Colaborador" %}
+    {% if user.is_superuser %}
     <div class="container-fluid" style="margin: 400px;">
         <h1>Eliminar usuario</h1>
         <p>¿Estás seguro de que quieres eliminar el usuario "{{ object.username }}"?</p><br>
@@ -16,7 +16,7 @@
             <input type="checkbox" name="eliminar_posts" id="eliminar_posts"><br><br>
             {% endif %}
             <input type="submit" value="Sí, eliminar">
-            <a style="color: black;" href="{% url 'apps.usuario:usuario_list' %}">No, cancelar</a>
+            <a style="color: black;" href="{% url 'usuarios:listar_usuario' %}">No, cancelar</a>
         </form>
     </div>
     {% else %}

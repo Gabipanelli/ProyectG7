@@ -8,6 +8,8 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query import QuerySet
 from django.contrib import messages
+from django.db.models import Count
+from django.utils import timezone
 
 class CrearNoticiaView(CreateView):
 	model = Noticia
@@ -16,30 +18,27 @@ class CrearNoticiaView(CreateView):
 	success_url = reverse_lazy('noticias:listar')
 
 class DetalleNoticiaView(DetailView):
-	model = Noticia
-	context_object_name = 'noticia'
-	template_name = 'noticias/detalle.html'
+    model = Noticia
+    context_object_name = 'noticia'
+    template_name = 'noticias/detalle.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        noticia = self.object
+        comentarios = Comentario.objects.filter(noticia=noticia)
+        context['comentarios'] = comentarios
+        return context
+
 
 class ListarNoticiasView(ListView):
     model = Noticia
     template_name = 'noticias/listar.html'
     context_object_name = 'noticias'
     paginate_by = 4 
+    
 
-def get_queryset(self):
-    queryset = Noticia.objects.all()
 
-    fecha_inicio = self.request.GET.get('fecha_inicio')
-    fecha_fin = self.request.GET.get('fecha_fin')
-    comentarios_min = self.request.GET.get('comentarios_min')
 
-    if fecha_inicio and fecha_fin:
-        queryset = queryset.filter(fecha__range=[fecha_inicio, fecha_fin])
-
-    if comentarios_min:
-        queryset = queryset.annotate(num_comentarios=models.Count('comentario')).filter(num_comentarios__gte=comentarios_min)
-
-    return queryset
 
 class ActualizarNoticiaView(UpdateView):
     model = Noticia
@@ -65,29 +64,41 @@ class ActualizarNoticiaView(UpdateView):
 #        return super().dispatch(request, *args, **kwargs)
 
 @login_required(login_url='/login/')
-def listar_noticias(request):
-    contexto = {}
+def Listar_Noticias(request):
+	contexto = {}
 
-    id_categoria = request.GET.get('id', None)
+	# Parametros de filtro desde la url
+	id_categoria = request.GET.get('categoria',None)
+	fecha = request.GET.get('fecha',None)
+	titulo = request.GET.get('titulo',None)
 
-    if id_categoria:
-        try:
-            # Verifica si el id_categoria es un número antes de hacer la consulta
-            id_categoria = int(id_categoria)
-            n = Noticia.objects.filter(categoria_noticia=id_categoria)
-        except ValueError:
-            # Si no es un número, devolver todas las noticias
-            n = Noticia.objects.all()
-    else:
-        n = Noticia.objects.all()  # RETORNA UNA LISTA DE OBJETOS
+	# Consulta base
+	noticias = Noticia.objects.all()
 
-    contexto['noticias'] = n
+	#aplicar filtro categoria si existe
+	if id_categoria:
+		noticias = Noticia.objects.filter(categoria_noticia = id_categoria)
+	
+	
+	# Aplicar filtro fecha si existe
+	if fecha == 'asc':
+		noticias = noticias.order_by('fecha')
+	elif fecha == 'desc':
+		noticias = noticias.order_by('-fecha')
+	
+	# Aplicar filtro por tirulo
+	if titulo == 'asc':
+		noticias = noticias.order_by('titulo')
+	elif titulo == 'desc':
+		noticias = noticias.order_by('-titulo')
 
-    # Obtener todas las categorías y ordenarlas por nombre
-    cat = Categoria.objects.all().order_by('nombre')
-    contexto['categorias'] = cat
+	contexto['noticias'] = noticias
 
-    return render(request, 'noticias/listar.html', contexto)
+	# Cargar todas las categorías y autores para los campos de selección
+	contexto['categorias'] = Categoria.objects.all().order_by('nombre')
+
+	return render(request, 'noticias/listar.html', contexto)
+
 
 @login_required
 def Detalle_Noticias(request, pk):
@@ -140,31 +151,31 @@ CLASE.objects.filter(campos = ____)
 CLASE.objects.all() ---> SELECT * FROM CLASE
 
 '''
-class NoticiaDetalleView(DetailView):
-    model = Noticia
-    template_name = "noticias/noticia_individual.html"
-    context_object_name = "noticias"
-    pk_url_kwarg = "id"
-    queryset = Noticia.objects.all()
+#class NoticiaDetalleView(DetailView):
+#    model = Noticia
+#   template_name = "noticias/noticia_individual.html"
+#    context_object_name = "noticias"
+#    pk_url_kwarg = "id"
+#    queryset = Noticia.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = ComentarioForm()
-        context['comentarios'] = Comentario.objects.filter(noticia_id=self.kwargs['id'])
-        return context
+#    def get_context_data(self, **kwargs):
+#        context = super().get_context_data(**kwargs)
+#        context['form'] = ComentarioForm()
+#        context['comentarios'] = self.objects.comentarios.all()
+#        return context
 
-    def noticia(self, request, *args, **kwargs):
-        form = ComentarioForm(request.POST)
-        if form.is_valid():
-            comentario = form.save(commit=False)
-            comentario.usuario = request.user
-            comentario.noticia_id = self.kwargs['id']
-            comentario.save()
-            return redirect('apps.noticias.noticia_individual', id=self.kwargs['id'])
-        else:
-            context = self.get_context_data(**kwargs)
-            context['form'] = form
-            return self.render_to_response(context)
+#    def noticia(self, request, *args, **kwargs):
+#        form = ComentarioForm(request.POST)
+#        if form.is_valid():
+#            comentario = form.save(commit=False)
+#            comentario.usuario = request.user
+#            comentario.noticia_id = self.kwargs['id']
+#            comentario.save()
+#            return redirect('apps.noticias.noticia_individual', id=self.kwargs['id'])
+#        else:
+#            context = self.get_context_data(**kwargs)
+#            context['form'] = form
+#            return self.render_to_response(context)
 
 
 class NoticiaCreateView(CreateView):
@@ -235,6 +246,13 @@ class ComentarioDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'noticias/eliminar_comentario.html'
 
     def get_success_url(self):
-        return reverse('noticias:noticia_individual', args=[self.object.noticia.id])
+        return reverse('noticias:detalle', args=[self.object.noticia.id])
 
 
+class NoticiaPorCategoriaView(ListView):
+    model = Noticia 
+    template_name = 'noticias/noticia_por_categoria.html'
+    context_object_name = 'noticias'
+
+    def get_queryset(self):
+        return Noticia.objects.filter(categoria_id=self.kwargs['pk'])
