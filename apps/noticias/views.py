@@ -36,25 +36,7 @@ class ListarNoticiasView(ListView):
     context_object_name = 'noticias'
     paginate_by = 4 
     
-    def get_queryset(self):
-        queryset = super().get_queryset()
 
-        # Filtro por categoría
-        categoria = self.request.GET.get('categoria')
-        if categoria:
-            queryset = queryset.filter(categoria_noticia=categoria)
-
-        # Filtro por fecha
-        fecha = self.request.GET.get('fecha')
-        if fecha:
-            queryset = queryset.filter(fecha__date=fecha)
-
-        # Filtro por cantidad de comentarios
-        comentarios = self.request.GET.get('comentarios')
-        if comentarios:
-            queryset = queryset.annotate(num_comentarios=Count('comentarios')).filter(num_comentarios__gte=int(comentarios))
-
-        return queryset
 
 
 
@@ -82,29 +64,41 @@ class ActualizarNoticiaView(UpdateView):
 #        return super().dispatch(request, *args, **kwargs)
 
 @login_required(login_url='/login/')
-def listar_noticias(request):
-    contexto = {}
+def Listar_Noticias(request):
+	contexto = {}
 
-    id_categoria = request.GET.get('id', None)
+	# Parametros de filtro desde la url
+	id_categoria = request.GET.get('categoria',None)
+	fecha = request.GET.get('fecha',None)
+	titulo = request.GET.get('titulo',None)
 
-    if id_categoria:
-        try:
-            # Verifica si el id_categoria es un número antes de hacer la consulta
-            id_categoria = int(id_categoria)
-            n = Noticia.objects.filter(categoria_noticia=id_categoria)
-        except ValueError:
-            # Si no es un número, devolver todas las noticias
-            n = Noticia.objects.all()
-    else:
-        n = Noticia.objects.all()  # RETORNA UNA LISTA DE OBJETOS
+	# Consulta base
+	noticias = Noticia.objects.all()
 
-    contexto['noticias'] = n
+	#aplicar filtro categoria si existe
+	if id_categoria:
+		noticias = Noticia.objects.filter(categoria_noticia = id_categoria)
+	
+	
+	# Aplicar filtro fecha si existe
+	if fecha == 'asc':
+		noticias = noticias.order_by('fecha')
+	elif fecha == 'desc':
+		noticias = noticias.order_by('-fecha')
+	
+	# Aplicar filtro por tirulo
+	if titulo == 'asc':
+		noticias = noticias.order_by('titulo')
+	elif titulo == 'desc':
+		noticias = noticias.order_by('-titulo')
 
-    # Obtener todas las categorías y ordenarlas por nombre
-    cat = Categoria.objects.all().order_by('nombre')
-    contexto['categorias'] = cat
+	contexto['noticias'] = noticias
 
-    return render(request, 'noticias/listar.html', contexto)
+	# Cargar todas las categorías y autores para los campos de selección
+	contexto['categorias'] = Categoria.objects.all().order_by('nombre')
+
+	return render(request, 'noticias/listar.html', contexto)
+
 
 @login_required
 def Detalle_Noticias(request, pk):
